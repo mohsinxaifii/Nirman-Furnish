@@ -18,15 +18,15 @@
     initSplitReveal();
     initClipReveal();
     initParallax();
+    initTrustTicker();
     initIndexSection();
     initWorkGallery();
     initLightbox();
     initWordsSpotlight();
     initCounters();
     initLeadForm();
-    initLeadFormMore();
     initFaqAccordion();
-    initStickyCta();
+    initProcessGrid();
     if (isFinePointer && !reduceMotion) {
       initMagnetic();
       initShowcaseTilt();
@@ -145,7 +145,11 @@
     }
 
     els.forEach(function (el, i) {
-      gsap.set(el, { opacity: 0, y: 28 });
+      // Elements measured for layout (e.g. the process grid boxes) opt out of the
+      // y-offset so getBoundingClientRect() is accurate even before they've scrolled
+      // into view — only opacity animates for these, no transform to race against.
+      var y = el.hasAttribute("data-reveal-fade") ? 0 : 28;
+      gsap.set(el, { opacity: 0, y: y });
       gsap.to(el, {
         opacity: 1, y: 0, duration: 0.9, ease: "power3.out", delay: (i % 4) * 0.06,
         scrollTrigger: { trigger: el, start: "top 90%", toggleActions: "play none none none" }
@@ -208,6 +212,24 @@
     });
   }
 
+  /* ---------------- Trust strip ticker (infinite GSAP marquee) ---------------- */
+  function initTrustTicker() {
+    var track = document.getElementById("trustStats");
+    if (!track || !window.gsap) return;
+
+    if (reduceMotion) return;
+
+    // Content is duplicated in the HTML, so translating by exactly half the
+    // track's width lands on a frame pixel-identical to the start — the
+    // repeat's reset is invisible and the scroll reads as never-ending.
+    var width = track.scrollWidth / 2;
+    var pxPerSecond = 40;
+    var tween = gsap.to(track, { x: -width, duration: width / pxPerSecond, ease: "none", repeat: -1 });
+
+    track.addEventListener("mouseenter", function () { tween.pause(); });
+    track.addEventListener("mouseleave", function () { tween.play(); });
+  }
+
   /* ---------------- Index section (services directory) ---------------- */
   function initIndexSection() {
     var rows = document.querySelectorAll(".index-row");
@@ -255,7 +277,7 @@
         image.src = d.img;
       }
       desc.textContent = d.desc;
-      if (cta) cta.href = "https://wa.me/918700322846?text=Hi%20Nirman%20Furnish%2C%20I%27d%20like%20a%20free%20estimate%20for%20" + d.wa + ".";
+      if (cta) cta.href = "https://wa.me/918800932959?text=Hi%20Nirman%20Furnish%2C%20I%27d%20like%20a%20free%20estimate%20for%20" + d.wa + ".";
       rows.forEach(function (r) {
         r.classList.toggle("is-active", r.dataset.service === key);
       });
@@ -288,16 +310,27 @@
       beds: seq("bed", 36, "jpg"),
       interior: seq("interior", 4, "jpg")
     };
+    var labels = { sofas: "Sofa", recliners: "Recliner", chairs: "Chair", beds: "Bed", interior: "Interior" };
 
     function render(key) {
       grid.innerHTML = "";
       manifest[key].forEach(function (file) {
+        var figure = document.createElement("figure");
+        figure.className = "showcase__item";
+
         var img = document.createElement("img");
         img.src = "assets/img/gallery/" + key + "/" + file;
         img.alt = "Nirman Furnish " + key + " restoration";
         img.loading = "lazy";
         img.decoding = "async";
-        grid.appendChild(img);
+
+        var cap = document.createElement("figcaption");
+        cap.className = "showcase__cap";
+        cap.textContent = labels[key] || key;
+
+        figure.appendChild(img);
+        figure.appendChild(cap);
+        grid.appendChild(figure);
       });
 
       if (window.gsap && !reduceMotion) {
@@ -341,26 +374,35 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") close(); });
   }
 
-  /* ---------------- Words (testimonial spotlight) ---------------- */
+  /* ---------------- Words (testimonial spotlight, styled as a Google review card) ---------------- */
   function initWordsSpotlight() {
     var quoteEl = document.getElementById("wordsQuote");
     var nameEl = document.getElementById("wordsName");
+    var avatarEl = document.getElementById("wordsAvatar");
+    var whenEl = document.getElementById("wordsWhen");
     var dotsEl = document.getElementById("wordsDots");
     var prevBtn = document.getElementById("wordsPrev");
     var nextBtn = document.getElementById("wordsNext");
     if (!quoteEl || !nameEl || !dotsEl) return;
 
     var testimonials = [
-      { name: "Priya Verma", quote: "My recliner stopped working and I thought it was done. They fixed it quickly. Saved me from buying a new one." },
-      { name: "Rahul Sharma", quote: "Got my old 7 seater sofa reupholstered. Looks brand new. Pickup and delivery was smooth. Totally worth it." },
-      { name: "Amit Gupta", quote: "I was planning to replace my sofa, but they restored it perfectly. Fabric quality is solid and finishing is clean." },
-      { name: "Neha Kapoor", quote: "They came home with fabric samples and explained everything clearly. No confusion, no hidden charges." },
-      { name: "Sandeep Mehta", quote: "My leather sofa had cracks and sagging cushions. Now it looks premium again. Craftsmanship is actually impressive." },
-      { name: "Pooja Malhotra", quote: "Got custom upholstery done for our dining chairs. Stitching and fitting are on point. House feels upgraded." },
-      { name: "Rohan Singh", quote: "Fast service and proper communication. Work was done exactly as promised." },
-      { name: "Anjali Mishra", quote: "They advised repair instead of replacement. Honest team and very reasonable pricing." },
-      { name: "Vikram Joshi", quote: "Foam replacement made a huge difference. Seating feels firm and comfortable again." }
+      { name: "Priya Verma", when: "2 weeks ago", quote: "My recliner stopped working and I thought it was done. They fixed it quickly. Saved me from buying a new one." },
+      { name: "Rahul Sharma", when: "3 weeks ago", quote: "Got my old 7 seater sofa reupholstered. Looks brand new. Pickup and delivery was smooth. Totally worth it." },
+      { name: "Amit Gupta", when: "1 month ago", quote: "I was planning to replace my sofa, but they restored it perfectly. Fabric quality is solid and finishing is clean." },
+      { name: "Neha Kapoor", when: "1 month ago", quote: "They came home with fabric samples and explained everything clearly. No confusion, no hidden charges." },
+      { name: "Sandeep Mehta", when: "2 months ago", quote: "My leather sofa had cracks and sagging cushions. Now it looks premium again. Craftsmanship is actually impressive." },
+      { name: "Pooja Malhotra", when: "2 months ago", quote: "Got custom upholstery done for our dining chairs. Stitching and fitting are on point. House feels upgraded." },
+      { name: "Rohan Singh", when: "3 months ago", quote: "Fast service and proper communication. Work was done exactly as promised." },
+      { name: "Anjali Mishra", when: "3 months ago", quote: "They advised repair instead of replacement. Honest team and very reasonable pricing." },
+      { name: "Vikram Joshi", when: "4 months ago", quote: "Foam replacement made a huge difference. Seating feels firm and comfortable again." }
     ];
+
+    function initials(name) {
+      var parts = name.trim().split(/\s+/);
+      var first = parts[0] ? parts[0][0] : "";
+      var last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+      return (first + last).toUpperCase();
+    }
 
     var current = 0;
     var timer = null;
@@ -375,16 +417,22 @@
     function show(i, resetTimer) {
       current = (i + testimonials.length) % testimonials.length;
       var t = testimonials[current];
+      var fields = [quoteEl, nameEl, avatarEl, whenEl].filter(Boolean);
 
-      if (window.gsap && !reduceMotion) {
-        gsap.to([quoteEl, nameEl], { opacity: 0, duration: 0.2, onComplete: function () {
-          quoteEl.textContent = "“" + t.quote + "”";
-          nameEl.textContent = t.name;
-          gsap.to([quoteEl, nameEl], { opacity: 1, duration: 0.35 });
-        } });
-      } else {
+      function apply() {
         quoteEl.textContent = "“" + t.quote + "”";
         nameEl.textContent = t.name;
+        if (avatarEl) avatarEl.textContent = initials(t.name);
+        if (whenEl) whenEl.textContent = t.when;
+      }
+
+      if (window.gsap && !reduceMotion) {
+        gsap.to(fields, { opacity: 0, duration: 0.2, onComplete: function () {
+          apply();
+          gsap.to(fields, { opacity: 1, duration: 0.35 });
+        } });
+      } else {
+        apply();
       }
 
       dotsEl.querySelectorAll("span").forEach(function (d, i2) { d.classList.toggle("is-active", i2 === current); });
@@ -429,28 +477,6 @@
     });
   }
 
-  /* ---------------- Lead form "add details" disclosure ---------------- */
-  function initLeadFormMore() {
-    var btn = document.getElementById("leadFormMore");
-    var panel = document.getElementById("leadFormExtra");
-    if (!btn || !panel) return;
-
-    btn.addEventListener("click", function () {
-      var open = panel.hidden;
-      panel.hidden = !open;
-      btn.setAttribute("aria-expanded", String(open));
-      btn.textContent = "";
-      var label = document.createElement("span");
-      label.textContent = open ? "− Fewer details" : "+ Add project details";
-      btn.appendChild(label);
-      if (!open) return;
-      var hint = document.createElement("span");
-      hint.className = "lead-form__more-hint";
-      hint.textContent = " (optional)";
-      btn.appendChild(hint);
-    });
-  }
-
   /* ---------------- FAQ accordion ---------------- */
   function initFaqAccordion() {
     var list = document.getElementById("faqList");
@@ -476,47 +502,70 @@
     });
   }
 
-  /* ---------------- Sticky mobile CTA bar ---------------- */
-  function initStickyCta() {
-    var bar = document.getElementById("stickyCta");
-    var hideNear = document.getElementById("enquire");
-    var footer = document.querySelector(".site-footer");
-    if (!bar || !window.IntersectionObserver) return;
+  /* ---------------- Process section: graph-paper grid sized to the boxes ---------------- */
+  /* Measures the actual rendered step boxes so one grid cell is exactly one box,
+     in both the row (desktop) and stacked (mobile) layouts, and keeps the
+     section's background phase-aligned so a grid line lands on every box edge. */
+  function initProcessGrid() {
+    var section = document.querySelector(".process");
+    var items = section ? section.querySelectorAll(".steps-list li") : [];
+    if (!section || items.length < 2) return;
 
-    var hiddenByForm = false;
-    var hiddenByFooter = false;
-    function sync() { bar.classList.toggle("is-hidden", hiddenByForm || hiddenByFooter); }
+    function update() {
+      var sectionRect = section.getBoundingClientRect();
+      var first = items[0].getBoundingClientRect();
+      var second = items[1].getBoundingClientRect();
+      var isRow = Math.abs(first.top - second.top) < 1;
 
-    if (hideNear) {
-      new IntersectionObserver(function (entries) {
-        hiddenByForm = entries[0].isIntersecting;
-        sync();
-      }, { rootMargin: "-20% 0px -70% 0px" }).observe(hideNear);
+      var cellW = isRow ? (second.left - first.left) : first.width;
+      var cellH = isRow ? first.height : (second.top - first.top);
+      if (!cellW || !cellH) return;
+
+      var offsetX = ((first.left - sectionRect.left) % cellW + cellW) % cellW;
+      var offsetY = ((first.top - sectionRect.top) % cellH + cellH) % cellH;
+
+      section.style.setProperty("--cell-w", cellW + "px");
+      section.style.setProperty("--cell-h", cellH + "px");
+      section.style.backgroundPosition = offsetX + "px " + offsetY + "px";
     }
-    if (footer) {
-      new IntersectionObserver(function (entries) {
-        hiddenByFooter = entries[0].isIntersecting;
-        sync();
-      }, { rootMargin: "0px" }).observe(footer);
-    }
+
+    update();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(update);
+    window.addEventListener("load", update);
+
+    var resizeTimer = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(update, 150);
+    });
   }
 
-  /* ---------------- Lead form -> WhatsApp ---------------- */
-  /* Submits via a pre-filled WhatsApp link today; swap this handler for an
-     EmailJS send once credentials are set up, keeping the WhatsApp link as a fallback. */
+  /* ---------------- Lead form -> WhatsApp (+ EmailJS copy) ---------------- */
+  /* WhatsApp stays the primary, visible action (matches the button/copy the
+     visitor sees). EmailJS fires alongside it, fire-and-forget, so a copy of
+     every lead also lands by email — its success or failure never blocks or
+     delays the WhatsApp redirect.
+     EMAILJS_TEMPLATE_ID is a placeholder: create a template in the EmailJS
+     dashboard (Email Templates -> Create New) using merge fields
+     {{from_name}}, {{phone}} and {{message}}, then paste its ID in below.
+     Only the Service ID and Public Key belong in this file — never the
+     Private Key, which must stay out of client-side code entirely. */
+  var EMAILJS_PUBLIC_KEY = "0y-54eaYngDG_MT3-";
+  var EMAILJS_SERVICE_ID = "service_2pzfv4j";
+  var EMAILJS_TEMPLATE_ID = "REPLACE_WITH_TEMPLATE_ID";
+
   function initLeadForm() {
     var form = document.getElementById("leadForm");
     var msg = document.getElementById("formMsg");
     if (!form || !msg) return;
+
+    if (window.emailjs) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       var name = form.name.value.trim();
       var phone = form.phone.value.trim();
-      var email = form.email.value.trim();
-      var location = form.location.value.trim();
-      var propertyType = form.propertyType.value;
 
       if (!name || !/^[0-9]{10}$/.test(phone)) {
         msg.textContent = "Please fill in your name and a 10-digit phone number.";
@@ -524,12 +573,18 @@
         return;
       }
 
-      var lines = ["Hi Nirman Furnish, I'd like a free estimate.", "Name: " + name, "Phone: " + phone];
-      if (email) lines.push("Email: " + email);
-      if (location) lines.push("Location: " + location);
-      if (propertyType) lines.push("Property Type: " + propertyType);
+      if (window.emailjs && EMAILJS_TEMPLATE_ID !== "REPLACE_WITH_TEMPLATE_ID") {
+        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+          from_name: name,
+          phone: phone,
+          message: "New free-estimate request from the website.\nName: " + name + "\nPhone: " + phone
+        }).catch(function (err) {
+          console.error("EmailJS send failed:", err);
+        });
+      }
 
-      var url = "https://wa.me/918700322846?text=" + encodeURIComponent(lines.join("\n"));
+      var lines = ["Hi Nirman Furnish, I'd like a free estimate.", "Name: " + name, "Phone: " + phone];
+      var url = "https://wa.me/918800932959?text=" + encodeURIComponent(lines.join("\n"));
       window.open(url, "_blank", "noopener");
 
       msg.textContent = "Opening WhatsApp with your details filled in…";
