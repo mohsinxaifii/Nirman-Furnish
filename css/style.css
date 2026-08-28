@@ -420,18 +420,32 @@ p { line-height: 1.65; color: var(--gray-600); }
 }
 
 /* ---------- Process (how it works) ---------- */
-.process { padding-block: var(--section-pad); background: var(--paper); }
+.process {
+  padding-block: var(--section-pad);
+  background-color: var(--paper);
+  /* Graph-paper grid, drawn with two repeating line gradients rather than an image. */
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 36px 36px;
+}
 .process h2 { margin-bottom: clamp(28px, 4vw, 40px); }
 
-.steps-list { display: grid; gap: 22px; margin-bottom: 28px; }
-.steps-list li { display: flex; gap: 16px; }
-.steps-list__num { font-family: var(--serif); font-size: 1.3rem; color: var(--gray-500); flex: none; width: 30px; }
+.steps-list { display: grid; gap: 16px; margin-bottom: 28px; }
+.steps-list li {
+  display: flex; gap: 16px; padding: 22px; border: 1px solid var(--black); background: var(--white);
+  transition: background-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+.steps-list li:hover { background: var(--black); color: var(--white); }
+.steps-list__num { font-family: var(--serif); font-size: 1.3rem; color: var(--gray-500); flex: none; width: 30px; transition: color 0.3s var(--ease); }
+.steps-list li:hover .steps-list__num { color: rgba(250,249,246,0.5); }
 .steps-list h3 { margin-bottom: 4px; }
-.steps-list p { font-size: 0.92rem; }
+.steps-list p { font-size: 0.92rem; transition: color 0.3s var(--ease); }
+.steps-list li:hover p { color: rgba(250,249,246,0.75); }
 
 @media (min-width: 900px) {
-  .steps-list--row { grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 2.6vw, 32px); }
-  .steps-list--row li { flex-direction: column; gap: 14px; padding-top: 20px; border-top: 1px solid var(--line); }
+  .steps-list--row { grid-template-columns: repeat(4, 1fr); gap: clamp(18px, 2.2vw, 26px); }
+  .steps-list--row li { flex-direction: column; gap: 16px; padding: 26px; }
 }
 
 /* ---------- Services (sticky visual interlocked with the directory list) ---------- */
