@@ -704,7 +704,7 @@ p {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--gray-600);
-  margin-bottom: 8px;
+  margin-top: 8px;
   display: block;
 }
 
@@ -747,6 +747,12 @@ p {
 .lead-form button[type="submit"]:hover {
   background: var(--charcoal);
   transform: translateY(-2px);
+}
+
+.lead-form button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .form-note {

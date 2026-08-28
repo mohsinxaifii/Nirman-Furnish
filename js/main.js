@@ -540,26 +540,33 @@
     });
   }
 
-  /* ---------------- Lead form -> WhatsApp (+ EmailJS copy) ---------------- */
-  /* WhatsApp stays the primary, visible action (matches the button/copy the
-     visitor sees). EmailJS fires alongside it, fire-and-forget, so a copy of
-     every lead also lands by email — its success or failure never blocks or
-     delays the WhatsApp redirect.
-     EMAILJS_TEMPLATE_ID is a placeholder: create a template in the EmailJS
-     dashboard (Email Templates -> Create New) using merge fields
-     {{from_name}}, {{phone}} and {{message}}, then paste its ID in below.
+  /* ---------------- Lead form -> EmailJS ---------------- */
+  /* EmailJS is now the primary submission path — the form no longer redirects
+     to WhatsApp. If the send fails (e.g. the connected mailbox needs
+     reconnecting in the EmailJS dashboard), the visitor gets a WhatsApp link
+     as a manual fallback instead of losing the lead silently.
+     Template fields: {{from_name}} (subject line) and {{name}}, {{phone}},
+     {{subject}}, {{message}} (body) — {{email}} exists in the template but
+     this form doesn't collect one, so it's sent blank.
      Only the Service ID and Public Key belong in this file — never the
      Private Key, which must stay out of client-side code entirely. */
-  var EMAILJS_PUBLIC_KEY = "0y-54eaYngDG_MT3-";
-  var EMAILJS_SERVICE_ID = "service_2pzfv4j";
-  var EMAILJS_TEMPLATE_ID = "REPLACE_WITH_TEMPLATE_ID";
+  var EMAILJS_PUBLIC_KEY = "7GrVCE3bVfF9rIh4Q";
+  var EMAILJS_SERVICE_ID = "service_mrbsxzc";
+  var EMAILJS_TEMPLATE_ID = "template_u7q3nsf";
 
   function initLeadForm() {
     var form = document.getElementById("leadForm");
     var msg = document.getElementById("formMsg");
+    var submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+    var btnLabel = form ? form.querySelector(".lead-form__btn-label") : null;
     if (!form || !msg) return;
 
     if (window.emailjs) emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+    function whatsappFallbackUrl(name, phone) {
+      var lines = ["Hi Nirman Furnish, I'd like a free estimate.", "Name: " + name, "Phone: " + phone];
+      return "https://wa.me/918800932959?text=" + encodeURIComponent(lines.join("\n"));
+    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -573,23 +580,38 @@
         return;
       }
 
-      if (window.emailjs && EMAILJS_TEMPLATE_ID !== "REPLACE_WITH_TEMPLATE_ID") {
-        emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-          from_name: name,
-          phone: phone,
-          message: "New free-estimate request from the website.\nName: " + name + "\nPhone: " + phone
-        }).catch(function (err) {
-          console.error("EmailJS send failed:", err);
-        });
+      if (!window.emailjs) {
+        msg.innerHTML = "Something went wrong. <a href=\"" + whatsappFallbackUrl(name, phone) +
+          "\" target=\"_blank\" rel=\"noopener noreferrer\">Message us on WhatsApp instead</a>.";
+        msg.className = "form-msg is-error";
+        return;
       }
 
-      var lines = ["Hi Nirman Furnish, I'd like a free estimate.", "Name: " + name, "Phone: " + phone];
-      var url = "https://wa.me/918800932959?text=" + encodeURIComponent(lines.join("\n"));
-      window.open(url, "_blank", "noopener");
+      if (submitBtn) submitBtn.disabled = true;
+      if (btnLabel) btnLabel.textContent = "Sending…";
+      msg.textContent = "";
+      msg.className = "form-msg";
 
-      msg.textContent = "Opening WhatsApp with your details filled in…";
-      msg.className = "form-msg is-success";
-      form.reset();
+      emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        from_name: name,
+        name: name,
+        phone: phone,
+        email: "",
+        subject: "Free Estimate Request",
+        message: "New free-estimate request from the website.\nName: " + name + "\nPhone: " + phone
+      }).then(function () {
+        msg.textContent = "Thanks! We've received your request — we'll reply within the hour.";
+        msg.className = "form-msg is-success";
+        form.reset();
+      }).catch(function (err) {
+        console.error("EmailJS send failed:", err);
+        msg.innerHTML = "Couldn't send your request. <a href=\"" + whatsappFallbackUrl(name, phone) +
+          "\" target=\"_blank\" rel=\"noopener noreferrer\">Message us on WhatsApp instead</a>.";
+        msg.className = "form-msg is-error";
+      }).finally(function () {
+        if (submitBtn) submitBtn.disabled = false;
+        if (btnLabel) btnLabel.textContent = "Send Request";
+      });
     });
   }
 
