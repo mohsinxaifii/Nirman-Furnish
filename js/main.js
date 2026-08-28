@@ -251,17 +251,9 @@
         img: "assets/img/gallery/chairs/chair-04.jpeg", wa: "a%20chair",
         desc: "Whether it's a cozy reading chair, a sleek dining seat, or an ergonomic office chair, our custom designs bring together comfort and personality, styled to fit any decor."
       },
-      beds: {
-        img: "assets/img/tabs/beds.jpg", wa: "a%20bed",
-        desc: "Experience comfort redefined with our custom-made beds. From statement headboards to storage-integrated frames and premium finishes, every bed is designed to complement your space."
-      },
       office: {
         img: "assets/img/tabs/office.jpg", wa: "office%20furniture",
         desc: "From executive desks and conference tables to modular workstations and smart storage solutions, we craft custom office furniture built for comfort and performance."
-      },
-      interior: {
-        img: "assets/img/tabs/interior.jpg", wa: "an%20interior%20project",
-        desc: "Go beyond furniture. Our experienced team offers complete interior solutions — from space planning and moodboarding to custom furnishing and decor alignment."
       }
     };
 
@@ -306,11 +298,9 @@
     var manifest = {
       sofas: ["sofa-09.jpg", "sofa-10.jpg", "sofa-11.jpg", "sofa-12.jpg", "sofa-13.jpg", "sofa-14.jpg", "sofa-15.jpg", "sofa-16.jpg", "sofa-17.jpg", "sofa-18.jpg"],
       recliners: seq("recliner", 14, "jpeg"),
-      chairs: ["chair-01.jpeg", "chair-02.jpeg", "chair-03.jpeg", "chair-04.jpeg", "chair-05.jpeg", "chair-06.jpg", "chair-07.jpg", "chair-08.jpg", "chair-09.jpg"],
-      beds: seq("bed", 36, "jpg"),
-      interior: seq("interior", 4, "jpg")
+      chairs: ["chair-01.jpeg", "chair-02.jpeg", "chair-03.jpeg", "chair-04.jpeg", "chair-05.jpeg", "chair-06.jpg", "chair-07.jpg", "chair-08.jpg", "chair-09.jpg"]
     };
-    var labels = { sofas: "Sofa", recliners: "Recliner", chairs: "Chair", beds: "Bed", interior: "Interior" };
+    var labels = { sofas: "Sofa", recliners: "Recliner", chairs: "Chair" };
 
     function render(key) {
       grid.innerHTML = "";
@@ -320,7 +310,7 @@
 
         var img = document.createElement("img");
         img.src = "assets/img/gallery/" + key + "/" + file;
-        img.alt = "Nirman Furnish " + key + " restoration";
+        img.alt = "Nirman Furnish " + key + " repair";
         img.loading = "lazy";
         img.decoding = "async";
 
@@ -388,7 +378,7 @@
     var testimonials = [
       { name: "Priya Verma", when: "2 weeks ago", quote: "My recliner stopped working and I thought it was done. They fixed it quickly. Saved me from buying a new one." },
       { name: "Rahul Sharma", when: "3 weeks ago", quote: "Got my old 7 seater sofa reupholstered. Looks brand new. Pickup and delivery was smooth. Totally worth it." },
-      { name: "Amit Gupta", when: "1 month ago", quote: "I was planning to replace my sofa, but they restored it perfectly. Fabric quality is solid and finishing is clean." },
+      { name: "Amit Gupta", when: "1 month ago", quote: "I was planning to replace my sofa, but they repaired it perfectly. Fabric quality is solid and finishing is clean." },
       { name: "Neha Kapoor", when: "1 month ago", quote: "They came home with fabric samples and explained everything clearly. No confusion, no hidden charges." },
       { name: "Sandeep Mehta", when: "2 months ago", quote: "My leather sofa had cracks and sagging cushions. Now it looks premium again. Craftsmanship is actually impressive." },
       { name: "Pooja Malhotra", when: "2 months ago", quote: "Got custom upholstery done for our dining chairs. Stitching and fitting are on point. House feels upgraded." },
