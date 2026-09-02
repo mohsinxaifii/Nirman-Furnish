@@ -376,15 +376,15 @@
     if (!quoteEl || !nameEl || !dotsEl) return;
 
     var testimonials = [
-      { name: "Priya Verma", when: "2 weeks ago", quote: "My recliner stopped working and I thought it was done. They fixed it quickly. Saved me from buying a new one." },
-      { name: "Rahul Sharma", when: "3 weeks ago", quote: "Got my old 7 seater sofa reupholstered. Looks brand new. Pickup and delivery was smooth. Totally worth it." },
-      { name: "Amit Gupta", when: "1 month ago", quote: "I was planning to replace my sofa, but they repaired it perfectly. Fabric quality is solid and finishing is clean." },
-      { name: "Neha Kapoor", when: "1 month ago", quote: "They came home with fabric samples and explained everything clearly. No confusion, no hidden charges." },
-      { name: "Sandeep Mehta", when: "2 months ago", quote: "My leather sofa had cracks and sagging cushions. Now it looks premium again. Craftsmanship is actually impressive." },
-      { name: "Pooja Malhotra", when: "2 months ago", quote: "Got custom upholstery done for our dining chairs. Stitching and fitting are on point. House feels upgraded." },
-      { name: "Rohan Singh", when: "3 months ago", quote: "Fast service and proper communication. Work was done exactly as promised." },
-      { name: "Anjali Mishra", when: "3 months ago", quote: "They advised repair instead of replacement. Honest team and very reasonable pricing." },
-      { name: "Vikram Joshi", when: "4 months ago", quote: "Foam replacement made a huge difference. Seating feels firm and comfortable again." }
+      { name: "Meenakshi Rawat", when: "2 weeks ago", quote: "My recliner had stopped reclining and I assumed it was scrap. They repaired the mechanism the same visit. Saved me the cost of a new one." },
+      { name: "Karan Bhatia", when: "3 weeks ago", quote: "Had our old 7-seater reupholstered. It genuinely looks new, and the pickup and delivery were handled without any fuss." },
+      { name: "Deepak Ahuja", when: "1 month ago", quote: "I had already started shopping for a replacement sofa. They restored ours instead — good fabric, neat finishing, half the spend." },
+      { name: "Shruti Nair", when: "1 month ago", quote: "The team came home with fabric samples and walked us through the options patiently. Quote was clear, and the final bill matched it." },
+      { name: "Arvind Chauhan", when: "2 months ago", quote: "Cracked leather and sunken cushions on a sofa we love. It looks premium again — the craftsmanship really shows up close." },
+      { name: "Ritika Sethi", when: "2 months ago", quote: "Got our dining chairs redone in a custom fabric. The stitching and fit are precise. The whole room looks different now." },
+      { name: "Nikhil Bansal", when: "3 months ago", quote: "Quick turnaround and they kept me updated through the week. Delivered exactly on the day they promised." },
+      { name: "Tanvi Rao", when: "3 months ago", quote: "They told me a repair would do instead of pushing a full rebuild. Honest advice and fair pricing — rare combination." },
+      { name: "Suresh Iyer", when: "4 months ago", quote: "New foam and re-tightened springs made all the difference. The seating is firm and comfortable again after years of sagging." }
     ];
 
     function initials(name) {
