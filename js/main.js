@@ -240,33 +240,38 @@
 
     var data = {
       sofas: {
-        img: "assets/img/tabs/sofas.jpg", wa: "a%20sofa",
+        img: "assets/img/gallery/sofas/sofa-06.jpg", wa: "a%20sofa",
         desc: "Relax in style with our handcrafted sofas and recliners. Each piece is custom-built using premium materials, offering ergonomic support and luxurious comfort. Choose from modern, classic or contemporary designs tailored to your space and lifestyle."
       },
       recliners: {
-        img: "assets/img/gallery/recliners/recliner-10.jpeg", wa: "a%20recliner",
+        img: "assets/img/gallery/sofas/sofa-07.jpg", pos: "40% 50%", wa: "a%20recliner",
         desc: "Indulge in ultimate comfort with our custom-built recliners. Designed with precision mechanisms, plush cushioning and ergonomic support, our recliners are perfect for unwinding after a long day. Choose manual or motorized options and premium fabrics."
       },
       chairs: {
-        img: "assets/img/gallery/chairs/chair-04.jpeg", wa: "a%20chair",
+        img: "assets/img/gallery/chairs/chair-01.jpg", wa: "a%20chair",
         desc: "Whether it's a cozy reading chair, a sleek dining seat, or an ergonomic office chair, our custom designs bring together comfort and personality, styled to fit any decor."
       },
-      office: {
-        img: "assets/img/tabs/office.jpg", wa: "office%20furniture",
-        desc: "From executive desks and conference tables to modular workstations and smart storage solutions, we craft custom office furniture built for comfort and performance."
+      beds: {
+        // Anchored left so the craftsman standing at the right edge stays out of frame.
+        img: "assets/img/gallery/beds/bed-01.jpg", pos: "0% 50%", wa: "a%20bed",
+        desc: "From padded headboards in geometric panel designs to fully upholstered bed frames, we reupholster and rebuild beds in the fabric or leather of your choice, finished to suit your room."
       }
     };
 
     function setService(key) {
       var d = data[key];
       if (!d) return;
+      function swap() {
+        image.src = d.img;
+        image.style.objectPosition = d.pos || "";
+      }
       if (window.gsap && !reduceMotion) {
         gsap.to(image, { opacity: 0, duration: 0.2, onComplete: function () {
-          image.src = d.img;
+          swap();
           gsap.to(image, { opacity: 1, duration: 0.35 });
         } });
       } else {
-        image.src = d.img;
+        swap();
       }
       desc.textContent = d.desc;
       if (cta) cta.href = "https://wa.me/918800932959?text=Hi%20Nirman%20Furnish%2C%20I%27d%20like%20a%20free%20estimate%20for%20" + d.wa + ".";
@@ -284,33 +289,52 @@
   }
 
   /* ---------------- Our work (masonry gallery) ---------------- */
-  function seq(prefix, count, ext) {
-    var out = [];
-    for (var i = 1; i <= count; i++) out.push(prefix + "-" + String(i).padStart(2, "0") + "." + ext);
-    return out;
-  }
-
   function initWorkGallery() {
     var grid = document.getElementById("workGrid");
     var filtersEl = document.getElementById("workFilters");
     if (!grid || !filtersEl) return;
 
+    // Tiles are square crops; `pos` keeps the piece in frame on portrait shots.
     var manifest = {
-      sofas: ["sofa-09.jpg", "sofa-10.jpg", "sofa-11.jpg", "sofa-12.jpg", "sofa-13.jpg", "sofa-14.jpg", "sofa-15.jpg", "sofa-16.jpg", "sofa-17.jpg", "sofa-18.jpg"],
-      recliners: seq("recliner", 14, "jpeg"),
-      chairs: ["chair-01.jpeg", "chair-02.jpeg", "chair-03.jpeg", "chair-04.jpeg", "chair-05.jpeg", "chair-06.jpg", "chair-07.jpg", "chair-08.jpg", "chair-09.jpg"]
+      sofas: [
+        { file: "sofa-01.jpg", alt: "Green tufted leather sofa on a hand-carved wooden frame" },
+        { file: "sofa-02.jpg", alt: "Carved wooden sofa reupholstered in emerald velvet at our workshop" },
+        { file: "sofa-03.jpg", alt: "Cream button-tufted sofa on a wooden base with splayed legs", pos: "25% 50%" },
+        { file: "sofa-04.jpg", alt: "Cream L-shaped sofa with patterned back cushions", pos: "10% 50%" },
+        { file: "sofa-05.jpg", alt: "Blue tufted L-shaped sofa with orange cushions and a matching ottoman table" },
+        { file: "sofa-06.jpg", alt: "Teal channel-stitched sofa with wooden arms" },
+        { file: "sofa-07.jpg", alt: "Brown leather two-seater recliner" },
+        { file: "sofa-08.jpg", alt: "Rose velvet three-seater recliner" },
+        { file: "sofa-09.jpg", alt: "Floral fabric L-shaped sofa with beige back cushions", pos: "20% 50%" },
+        { file: "sofa-10.jpg", alt: "Green fabric two-seater sofa" },
+        { file: "sofa-11.jpg", alt: "Blue fabric three-seater sofa" }
+      ],
+      beds: [
+        { file: "bed-01.jpg", alt: "Rose hexagon-panel headboard with gold inlay strips" },
+        { file: "bed-02.jpg", alt: "Tan leather upholstered bed with a panelled headboard" },
+        { file: "bed-03.jpg", alt: "Grey padded headboard wall with gold accent lines", pos: "50% 20%" },
+        { file: "bed-04.jpg", alt: "Grey channel-tufted upholstered bed frame", pos: "25% 50%" },
+        { file: "bed-05.jpg", alt: "Teal geometric padded headboard with an upholstered bed base", pos: "50% 35%" }
+      ],
+      chairs: [
+        { file: "chair-01.jpg", alt: "Wingback armchairs alongside carved green leather sofas in a living room" },
+        { file: "chair-02.jpg", alt: "Striped fabric wingback armchair", pos: "50% 22%" },
+        { file: "chair-03.jpg", alt: "Carved white armchair with a gold tufted seat and back" },
+        { file: "chair-04.jpg", alt: "Terracotta single-seat recliner", pos: "50% 30%" }
+      ]
     };
-    var labels = { sofas: "Sofa", recliners: "Recliner", chairs: "Chair" };
+    var labels = { sofas: "Sofa", beds: "Bed", chairs: "Chair" };
 
     function render(key) {
       grid.innerHTML = "";
-      manifest[key].forEach(function (file) {
+      manifest[key].forEach(function (item) {
         var figure = document.createElement("figure");
         figure.className = "showcase__item";
 
         var img = document.createElement("img");
-        img.src = "assets/img/gallery/" + key + "/" + file;
-        img.alt = "Nirman Furnish " + key + " repair";
+        img.src = "assets/img/gallery/" + key + "/" + item.file;
+        img.alt = item.alt;
+        if (item.pos) img.style.objectPosition = item.pos;
         img.loading = "lazy";
         img.decoding = "async";
 
