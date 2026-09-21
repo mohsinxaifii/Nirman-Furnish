@@ -1518,6 +1518,18 @@ p {
   cursor: zoom-in;
 }
 
+/* Landscape shots take two columns. The image is pinned so it never sizes the
+   row: alone on a 2-col row it holds 2:1, beside square tiles it takes their height. */
+.showcase__item--wide {
+  grid-column: span 2;
+  aspect-ratio: 2 / 1;
+}
+
+.showcase__item--wide img {
+  position: absolute;
+  inset: 0;
+}
+
 .showcase__item img {
   width: 100%;
   height: 100%;
@@ -1564,6 +1576,10 @@ p {
 @media (min-width: 640px) {
   .showcase__grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  .showcase__item--wide {
+    aspect-ratio: auto;
   }
 }
 

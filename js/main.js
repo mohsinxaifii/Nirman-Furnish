@@ -295,8 +295,10 @@
     if (!grid || !filtersEl) return;
 
     // Tiles are square crops; `pos` keeps the piece in frame on portrait shots.
+    // `wide` spans two columns for landscape shots; `cap` overrides the category label.
     var manifest = {
       sofas: [
+        { file: "sofa-studio.jpg", alt: "Inside the Nirman Furnish studio — craftsmen restoring a carved sofa and stitching upholstery", wide: true, cap: "Our studio" },
         { file: "sofa-01.jpg", alt: "Green tufted leather sofa on a hand-carved wooden frame" },
         { file: "sofa-02.jpg", alt: "Carved wooden sofa reupholstered in emerald velvet at our workshop" },
         { file: "sofa-03.jpg", alt: "Cream button-tufted sofa on a wooden base with splayed legs", pos: "25% 50%" },
@@ -329,7 +331,7 @@
       grid.innerHTML = "";
       manifest[key].forEach(function (item) {
         var figure = document.createElement("figure");
-        figure.className = "showcase__item";
+        figure.className = "showcase__item" + (item.wide ? " showcase__item--wide" : "");
 
         var img = document.createElement("img");
         img.src = "assets/img/gallery/" + key + "/" + item.file;
@@ -340,7 +342,7 @@
 
         var cap = document.createElement("figcaption");
         cap.className = "showcase__cap";
-        cap.textContent = labels[key] || key;
+        cap.textContent = item.cap || labels[key] || key;
 
         figure.appendChild(img);
         figure.appendChild(cap);
