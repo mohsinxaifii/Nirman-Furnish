@@ -590,8 +590,9 @@
       var name = form.name.value.trim();
       var phone = form.phone.value.trim();
 
-      if (!name || !/^[0-9]{10}$/.test(phone)) {
-        msg.textContent = "Please fill in your name and a 10-digit phone number.";
+      /* Phone is sent exactly as typed — +91, spaces, dashes all fine. */
+      if (!name || !phone) {
+        msg.textContent = "Please fill in your name and phone number.";
         msg.className = "form-msg is-error";
         return;
       }
