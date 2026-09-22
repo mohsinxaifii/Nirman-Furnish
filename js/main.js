@@ -619,6 +619,9 @@
         msg.textContent = "Thanks! We've received your request — we'll reply within the hour.";
         msg.className = "form-msg is-success";
         form.reset();
+        /* Google Ads "form submit" conversion — there's no thank-you page,
+           so it fires here, only once EmailJS confirms the send. */
+        if (window.gtag) gtag("event", "conversion", { send_to: "AW-18453178885/mjCSCOb4of4cEIXUlN9E" });
       }).catch(function (err) {
         console.error("EmailJS send failed:", err);
         msg.innerHTML = "Couldn't send your request. <a href=\"" + whatsappFallbackUrl(name, phone) +
